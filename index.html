@@ -3,17 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VS Code Music Player</title>
+    <title>Music Player — Premium Glass</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <link rel="stylesheet" href="style.css">
+    
+    <style>
+        /* Modern Header & Logout Style */
+        .player-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 35px;
+            height: 35px;
+            background: rgba(29, 185, 84, 0.1);
+            border: 1px solid rgba(29, 185, 84, 0.3);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #1db954;
+            box-shadow: 0 0 10px rgba(29, 185, 84, 0.2);
+        }
+
+        .user-info {
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .welcome-text {
+            font-size: 0.6rem;
+            color: #888899;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .username {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #f0f0f2;
+        }
+
+        .logout-action {
+            background: rgba(255, 59, 48, 0.1);
+            border: 1px solid rgba(255, 59, 48, 0.2);
+            color: #ff3b30;
+            width: 35px;
+            height: 35px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1rem;
+        }
+
+        .logout-action:hover {
+            background: #ff3b30;
+            color: white;
+            transform: scale(1.1) rotate(-5deg);
+            box-shadow: 0 0 15px rgba(255, 59, 48, 0.4);
+        }
+    </style>
 </head>
 <body>
+
+    <div id="auth-modal" style="position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(10px);">
+        <div class="player-container" style="animation: none; max-width: 350px;">
+            
+            <div id="login-form">
+                <h2 style="color: var(--primary-color); text-align: center; margin-bottom: 20px;">Login</h2>
+                <input type="text" id="login-user" placeholder="Username" style="width:100%; padding:12px; margin-bottom:10px; border-radius:10px; border:none; background:#222; color:white;">
+                <input type="password" id="login-pass" placeholder="Password" style="width:100%; padding:12px; margin-bottom:15px; border-radius:10px; border:none; background:#222; color:white;">
+                <button onclick="integratedLogin()" style="width:100%; padding:12px; background:var(--primary-color); border:none; border-radius:10px; color:white; font-weight:600; cursor:pointer;">Masuk</button>
+                <p style="font-size:0.8rem; text-align:center; margin-top:15px; color: #ccc;">
+                    Belum punya akun? <a href="#" onclick="toggleAuth('reg')" style="color:var(--primary-color);">Daftar</a><br>
+                    <a href="#" onclick="toggleAuth('forgot')" style="color:rgba(255,255,255,0.5); text-decoration:none;">Lupa Password?</a>
+                </p>
+            </div>
+
+            <div id="register-form" style="display:none;">
+                <h2 style="color: var(--primary-color); text-align: center; margin-bottom: 20px;">Registrasi</h2>
+                <input type="text" id="reg-user" placeholder="Username Baru" style="width:100%; padding:12px; margin-bottom:10px; border-radius:10px; border:none; background:#222; color:white;">
+                <input type="password" id="reg-pass" placeholder="Password Baru" style="width:100%; padding:12px; margin-bottom:15px; border-radius:10px; border:none; background:#222; color:white;">
+                <button onclick="handleRegister()" style="width:100%; padding:12px; background:var(--primary-color); border:none; border-radius:10px; color:white; font-weight:600; cursor:pointer;">Daftar Akun</button>
+                <p style="font-size:0.8rem; text-align:center; margin-top:15px; color: #ccc;">Sudah punya akun? <a href="#" onclick="toggleAuth('login')" style="color:var(--primary-color);">Login</a></p>
+            </div>
+
+            <div id="forgot-form" style="display:none;">
+                <h2 style="color: #ff453a; text-align: center; margin-bottom: 20px;">Reset Password</h2>
+                <p style="font-size:0.8rem; text-align:center; margin-bottom:15px; opacity:0.7; color: white;">Masukkan username Anda untuk melihat password.</p>
+                <input type="text" id="forgot-user" placeholder="Username Anda" style="width:100%; padding:12px; margin-bottom:15px; border-radius:10px; border:none; background:#222; color:white;">
+                <button onclick="handleForgot()" style="width:100%; padding:12px; background:#444; border:none; border-radius:10px; color:white; font-weight:600; cursor:pointer;">Cek Password</button>
+                <p style="font-size:0.8rem; text-align:center; margin-top:15px;"><a href="#" onclick="toggleAuth('login')" style="color:var(--primary-color);">Kembali ke Login</a></p>
+            </div>
+        </div>
+    </div>
 
     <div id="toast-container"></div>
 
     <div class="player-container">
-        <header>
-            <h1>My Playlist</h1>
+        <header class="player-header">
+            <div class="user-profile">
+                <div class="avatar"><i class="fas fa-user"></i></div>
+                <div class="user-info">
+                    <span class="welcome-text">Halo,</span>
+                    <span class="username" id="display-username">Pendengar</span>
+                </div>
+            </div>
+            <button class="logout-action" onclick="handleLogout()" title="Logout">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
         </header>
 
         <div class="search-section">
@@ -22,18 +138,37 @@
 
         <main class="active-player">
             <div class="cover-wrapper">
-                <!-- Cover diganti dengan placeholder estetik bertema musik/abstract -->
-                <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=1000&auto=format&fit=crop" id="cover" alt="Cover Album">
+                <canvas id="visualizer"></canvas>
+                <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=1000" id="cover" alt="Cover Album">
             </div>
-            
+
+            <div class="progress-container">
+                <span id="current-time">0:00</span>
+                <input type="range" id="progress-bar" value="0" max="100">
+                <span id="duration-time">0:00</span>
+            </div>
+        
             <div class="song-details">
                 <h2 id="title">Memuat Lagu...</h2>
-                <p id="artist">Silakan tunggu</p>
+                <p id="artist">Silakan pilih lagu</p>
+            </div>
+
+            <div class="lyrics-container" id="lyrics-container">
+                <p id="lyrics-text">Lirik tidak tersedia</p>
+            </div>
+
+            <div class="volume-container">
+                <i class="fas fa-volume-up"></i>
+                <input type="range" id="volume-control" min="0" max="1" step="0.1" value="1">
             </div>
             
-            <div class="audio-wrapper">
-                <audio id="audio" controls preload="auto">
-                </audio>
+            <audio id="audio" preload="auto"></audio>
+
+            <div class="playback-controls">
+                <button id="shuffle-btn" title="Putar Acak">🔀</button>
+                <button id="prev-btn" title="Lagu Sebelumnya">⏮</button>
+                <button id="next-btn" title="Lagu Berikutnya">⏭</button>
+                <button id="repeat-btn" title="Ulangi Lagu">🔁</button>
             </div>
         </main>
 
@@ -44,10 +179,44 @@
             <input type="file" id="file-upload" accept="audio/*" multiple style="display:none;">
         </div>
 
-        <section class="playlist" id="playlist">
-        </section>
+        <section class="playlist" id="playlist"></section>
     </div>
 
     <script src="script.js"></script>
+
+    <script>
+        // Fungsi gabungan agar tidak bentrok
+        function integratedLogin() {
+            const userField = document.getElementById('login-user');
+            const username = userField.value.trim();
+
+            if (username !== "") {
+                // 1. Update nama di Header
+                document.getElementById('display-username').innerText = username;
+                
+                // 2. Panggil fungsi asli dari script.js kamu
+                if (typeof handleLogin === 'function') {
+                    handleLogin(); 
+                } else {
+                    // Jika script.js belum dimuat/error, minimal tutup modalnya
+                    document.getElementById('auth-modal').style.display = 'none';
+                }
+            } else {
+                alert("Masukkan username terlebih dahulu!");
+            }
+        }
+
+        function handleLogout() {
+            if(confirm("Apakah Anda yakin ingin keluar?")) {
+                const audio = document.getElementById('audio');
+                if(audio) audio.pause();
+                
+                document.getElementById('auth-modal').style.display = 'flex';
+                document.getElementById('display-username').innerText = "Pendengar";
+                
+                if(typeof toggleAuth === 'function') toggleAuth('login');
+            }
+        }
+    </script>
 </body>
 </html>

@@ -1,5 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
+/* --- 0. CSS Variables --- */
+:root {
+    --primary-color: #1db954;
+}
+
+/* --- 1. Reset & Base --- */
 * {
     margin: 0;
     padding: 0;
@@ -7,11 +13,10 @@
 }
 
 body {
-    background: #050505; /* Gelap lebih deep */
-    /* Animasi background agar terasa hidup */
+    background: #050505;
     background-image: 
-        radial-gradient(circle at 20% 30%, #1db95415, transparent), 
-        radial-gradient(circle at 80% 70%, #1db95410, transparent);
+        radial-gradient(circle at 20% 30%, var(--primary-color), transparent), 
+        radial-gradient(circle at 80% 70%, var(--primary-color), transparent);
     color: #ffffff;
     font-family: 'Poppins', sans-serif;
     display: flex;
@@ -20,18 +25,19 @@ body {
     min-height: 100vh;
     padding: 20px;
     overflow-x: hidden;
+    transition: background 0.8s ease;
 }
 
-/* Animasi Muncul Container */
+/* --- 2. Container --- */
 .player-container {
     width: 100%;
-    max-width: 380px; /* Sedikit lebih lebar untuk laptop */
+    max-width: 380px;
     background: rgba(18, 18, 18, 0.95);
     padding: 30px;
     border-radius: 40px;
     box-shadow: 0 50px 100px rgba(0, 0, 0, 0.9), 
-                0 0 20px rgba(29, 185, 84, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+                0 0 30px var(--primary-color);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     animation: slideUp 0.8s ease-out;
 }
@@ -41,7 +47,6 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Header */
 header h1 {
     font-size: 0.9rem;
     margin-bottom: 25px;
@@ -53,7 +58,7 @@ header h1 {
     text-shadow: 0 0 15px rgba(29, 185, 84, 0.3);
 }
 
-/* Input Search */
+/* --- 3. Search Section --- */
 #search-input {
     width: 100%;
     padding: 14px 20px;
@@ -74,7 +79,7 @@ header h1 {
     transform: scale(1.02);
 }
 
-/* Album Art dengan Animasi Pulse */
+/* --- 4. Cover & Visualizer --- */
 .cover-wrapper {
     width: 100%;
     margin-bottom: 30px;
@@ -90,7 +95,6 @@ header h1 {
     object-fit: cover;
     box-shadow: 0 20px 50px rgba(0,0,0,0.6);
     transition: all 0.5s ease;
-    /* Animasi mengembang halus (Pulse) */
     animation: albumFloat 6s ease-in-out infinite;
 }
 
@@ -99,9 +103,19 @@ header h1 {
     50% { transform: translateY(-10px) scale(1.02); }
 }
 
-/* Song Info */
+#visualizer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* --- 5. Song Info --- */
 .song-details {
-    margin-bottom: 25px;
+    margin-bottom: 20px;
     text-align: center;
 }
 
@@ -109,15 +123,12 @@ header h1 {
     font-size: 1.4rem;
     font-weight: 600;
     margin-bottom: 6px;
-    
-    /* Perbaikan Background Clip */
-    background: linear-gradient(to right, #ffffff, #1db954);
+    background: linear-gradient(to right, #ffffff, var(--primary-color));
     -webkit-background-clip: text;
-    background-clip: text; /* Standar modern */
+    background-clip: text;
     -webkit-text-fill-color: transparent;
-    color: transparent; /* Fallback */
-    
-    display: inline-block; /* Memastikan gradien presisi pada teks */
+    color: transparent;
+    display: inline-block;
     width: 100%;
 }
 
@@ -127,16 +138,96 @@ header h1 {
     font-weight: 300;
 }
 
-/* Audio Player Modern Styling */
+/* --- 6. Progress & Audio --- */
+.progress-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    font-size: 0.75rem;
+    color: #a7a7a7;
+}
+
+#progress-bar {
+    flex: 1;
+    accent-color: var(--primary-color);
+    cursor: pointer;
+    height: 4px;
+}
+
 audio {
     width: 100%;
     height: 45px;
     filter: invert(100%) brightness(1.8) hue-rotate(100deg);
-    margin-bottom: 25px;
+    margin-bottom: 15px;
     border-radius: 50px;
 }
 
-/* Upload Section */
+/* --- 7. Volume Control --- */
+.volume-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+#volume-control {
+    width: 80px;
+    accent-color: var(--primary-color);
+    cursor: pointer;
+    color: var(--primary-color);
+}
+
+.volume-container i {
+    color: #a7a7a7;
+    font-size: 0.8rem;
+}
+
+/* --- 8. Playback Controls --- */
+.playback-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 25px;
+    margin-bottom: 25px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 15px;
+    border-radius: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.playback-controls button {
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    opacity: 0.5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.playback-controls button:hover {
+    opacity: 1;
+    transform: scale(1.2);
+    color: #1db954;
+}
+
+.playback-controls button.active {
+    opacity: 1;
+    color: #1db954;
+    text-shadow: 0 0 10px rgba(29, 185, 84, 0.5);
+}
+
+#prev-btn, #next-btn {
+    font-size: 1.8rem;
+    opacity: 0.8;
+}
+
+/* --- 9. Upload & Playlist --- */
 .custom-file-upload {
     display: flex;
     align-items: center;
@@ -144,7 +235,7 @@ audio {
     gap: 12px;
     font-size: 0.85rem;
     font-weight: 600;
-    color: #1db954;
+    color: var(--primary-color);
     padding: 14px;
     border-radius: 18px;
     background: rgba(29, 185, 84, 0.05);
@@ -152,6 +243,7 @@ audio {
     cursor: pointer;
     margin-bottom: 25px;
     transition: all 0.3s ease;
+    accent-color: var(--primary-color);
 }
 
 .custom-file-upload:hover {
@@ -160,24 +252,26 @@ audio {
     transform: translateY(-2px);
 }
 
-/* Playlist Area */
 .playlist {
     max-height: 200px;
     overflow-y: auto;
+    overflow-x: hidden; /* Mencegah scroll horizontal yang merusak tampilan */
     padding-right: 10px;
 }
 
-/* Kustomisasi Scrollbar Playlist */
 .playlist::-webkit-scrollbar {
     width: 5px;
 }
+
 .playlist::-webkit-scrollbar-track {
     background: transparent;
 }
+
 .playlist::-webkit-scrollbar-thumb {
     background: #282828;
     border-radius: 10px;
 }
+
 .playlist::-webkit-scrollbar-thumb:hover {
     background: #3e3e3e;
 }
@@ -193,6 +287,21 @@ audio {
     border: 1px solid transparent;
     transition: all 0.3s ease;
     cursor: pointer;
+    /* Tambahan agar struktur box konsisten */
+    width: 100%;
+    box-sizing: border-box;
+    gap: 12px; 
+}
+
+.playlist-item strong {
+    flex: 1; /* Mengambil ruang sisa */
+    min-width: 0; /* WAJIB: Agar flex-item bisa mengecil dan memicu ellipsis */
+    white-space: nowrap; /* Teks tetap satu baris */
+    overflow: hidden; /* Sembunyikan teks yang meluap */
+    text-overflow: ellipsis; /* Tambahkan titik-titik (...) */
+    font-size: 0.85rem;
+    text-align: left;
+    display: block;
 }
 
 .playlist-item:hover {
@@ -211,6 +320,7 @@ audio {
 }
 
 .delete-btn {
+    flex-shrink: 0; /* WAJIB: Mencegah tombol gepeng atau terdorong keluar layar */
     background: rgba(255, 59, 48, 0.1);
     border: none;
     color: #ff453a;
@@ -230,26 +340,32 @@ audio {
     transform: scale(1.1) rotate(90deg);
 }
 
-/* Laptop/Desktop View Adjustment */
+/* --- 10. Lirik --- */
+.lyrics-container {
+    margin: 15px 0;
+    height: 60px;
+    overflow-y: auto;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #e0e0e0;
+    font-style: italic;
+    mask-image: linear-gradient(transparent, white 20%, white 80%, transparent);
+}
+
+/* --- 11. Responsive --- */
 @media (min-width: 768px) {
     .player-container {
         max-width: 400px;
         padding: 40px;
     }
-    
-    #title {
-        font-size: 1.6rem;
-    }
+    #title { font-size: 1.6rem; }
 }
 
-/* HP/Mobile Small Adjustment */
 @media (max-width: 480px) {
     .player-container {
         padding: 20px;
         border-radius: 30px;
     }
-    
-    #title {
-        font-size: 1.2rem;
-    }
+    #title { font-size: 1.2rem; }
+    .playback-controls { gap: 15px; }
 }
