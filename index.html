@@ -4,21 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Music Player — Premium Glass</title>
-    
+
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
     <link rel="stylesheet" href="style.css">
-    
+
     <style>
-        /* Modern Header & Logout Style */
+        /* =====================================================
+           HEADER & LOGOUT
+           (inline karena scope khusus layout header player)
+           ===================================================== */
         .player-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 5px 0;
             margin-bottom: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid var(--border);
         }
 
         .user-profile {
@@ -30,25 +32,26 @@
         .avatar {
             width: 35px;
             height: 35px;
-            background: rgba(29, 185, 84, 0.1);
-            border: 1px solid rgba(29, 185, 84, 0.3);
             border-radius: 50%;
+            background: var(--primary-dim);
+            border: 1px solid var(--primary-border);
             display: flex;
             justify-content: center;
             align-items: center;
-            color: #1db954;
-            box-shadow: 0 0 10px rgba(29, 185, 84, 0.2);
+            color: var(--primary);
+            box-shadow: 0 0 10px var(--primary-glow);
+            flex-shrink: 0;
         }
 
         .user-info {
-            text-align: left;
             display: flex;
             flex-direction: column;
+            text-align: left;
         }
 
         .welcome-text {
             font-size: 0.6rem;
-            color: #888899;
+            color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 1px;
         }
@@ -56,167 +59,286 @@
         .username {
             font-size: 0.85rem;
             font-weight: 600;
-            color: #f0f0f2;
+            color: var(--text-base);
         }
 
         .logout-action {
-            background: rgba(255, 59, 48, 0.1);
-            border: 1px solid rgba(255, 59, 48, 0.2);
-            color: #ff3b30;
             width: 35px;
             height: 35px;
-            border-radius: 10px;
+            border-radius: var(--radius-md);
+            background: var(--danger-dim);
+            border: 1px solid rgba(255, 59, 48, 0.2);
+            color: var(--danger);
             cursor: pointer;
-            transition: all 0.3s ease;
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: 1rem;
+            flex-shrink: 0;
+            transition: background var(--transition), color var(--transition),
+                        transform var(--transition), box-shadow var(--transition);
         }
 
         .logout-action:hover {
-            background: #ff3b30;
-            color: white;
+            background: var(--danger);
+            color: var(--text-base);
             transform: scale(1.1) rotate(-5deg);
-            box-shadow: 0 0 15px rgba(255, 59, 48, 0.4);
+            box-shadow: 0 0 15px rgba(255, 69, 58, 0.4);
         }
+
+        /* =====================================================
+           AUTH MODAL — input & button styles
+           ===================================================== */
+        .auth-input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            background: #222;
+            color: var(--text-base);
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.85rem;
+            outline: none;
+            transition: border-color var(--transition), box-shadow var(--transition);
+        }
+
+        .auth-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-dim);
+        }
+
+        .auth-input.mb-lg { margin-bottom: 15px; }
+
+        .auth-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: var(--radius-md);
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: opacity var(--transition), transform var(--transition);
+        }
+
+        .auth-btn:hover  { opacity: 0.9; transform: translateY(-1px); }
+        .auth-btn:active { transform: translateY(0); }
+
+        .auth-btn-primary {
+            background: var(--primary);
+            color: #000;
+        }
+
+        .auth-btn-secondary {
+            background: #444;
+            color: var(--text-base);
+        }
+
+        .auth-heading {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .auth-note {
+            font-size: 0.8rem;
+            text-align: center;
+            margin-top: 15px;
+            color: #ccc;
+        }
+
+        .auth-link         { color: var(--primary); text-decoration: none; }
+        .auth-link-muted   { color: rgba(255,255,255,0.5); text-decoration: none; }
+        .auth-link:hover,
+        .auth-link-muted:hover { text-decoration: underline; }
+
+        /* Pause overlay z-index fix */
+        .pause-overlay { z-index: 3; }
     </style>
 </head>
 <body>
 
-    <div id="auth-modal" style="position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(10px);">
+    <!-- =====================================================
+         AUTH MODAL
+         ===================================================== -->
+    <div id="auth-modal" style="
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.95);
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        backdrop-filter: blur(10px);
+    ">
         <div class="player-container" style="animation: none; max-width: 350px;">
-            
+
+            <!-- Login -->
             <div id="login-form">
-                <h2 style="color: var(--primary-color); text-align: center; margin-bottom: 20px;">Login</h2>
-                <input type="text" id="login-user" placeholder="Username" style="width:100%; padding:12px; margin-bottom:10px; border-radius:10px; border:none; background:#222; color:white;">
-                <input type="password" id="login-pass" placeholder="Password" style="width:100%; padding:12px; margin-bottom:15px; border-radius:10px; border:none; background:#222; color:white;">
-                <button onclick="integratedLogin()" style="width:100%; padding:12px; background:var(--primary-color); border:none; border-radius:10px; color:white; font-weight:600; cursor:pointer;">Masuk</button>
-                <p style="font-size:0.8rem; text-align:center; margin-top:15px; color: #ccc;">
-                    Belum punya akun? <a href="#" onclick="toggleAuth('reg')" style="color:var(--primary-color);">Daftar</a><br>
-                    <a href="#" onclick="toggleAuth('forgot')" style="color:rgba(255,255,255,0.5); text-decoration:none;">Lupa Password?</a>
+                <h2 class="auth-heading" style="color: var(--primary);">Login</h2>
+                <input type="text"     id="login-user" placeholder="Username" class="auth-input">
+                <input type="password" id="login-pass" placeholder="Password" class="auth-input mb-lg">
+                <button class="auth-btn auth-btn-primary" onclick="integratedLogin()">Masuk</button>
+                <p class="auth-note">
+                    Belum punya akun?
+                    <a href="#" class="auth-link" onclick="toggleAuth('reg')">Daftar</a><br>
+                    <a href="#" class="auth-link-muted" onclick="toggleAuth('forgot')">Lupa Password?</a>
                 </p>
             </div>
 
-            <div id="register-form" style="display:none;">
-                <h2 style="color: var(--primary-color); text-align: center; margin-bottom: 20px;">Registrasi</h2>
-                <input type="text" id="reg-user" placeholder="Username Baru" style="width:100%; padding:12px; margin-bottom:10px; border-radius:10px; border:none; background:#222; color:white;">
-                <input type="password" id="reg-pass" placeholder="Password Baru" style="width:100%; padding:12px; margin-bottom:15px; border-radius:10px; border:none; background:#222; color:white;">
-                <button onclick="handleRegister()" style="width:100%; padding:12px; background:var(--primary-color); border:none; border-radius:10px; color:white; font-weight:600; cursor:pointer;">Daftar Akun</button>
-                <p style="font-size:0.8rem; text-align:center; margin-top:15px; color: #ccc;">Sudah punya akun? <a href="#" onclick="toggleAuth('login')" style="color:var(--primary-color);">Login</a></p>
+            <!-- Registrasi -->
+            <div id="register-form" style="display: none;">
+                <h2 class="auth-heading" style="color: var(--primary);">Registrasi</h2>
+                <input type="text"     id="reg-user" placeholder="Username Baru" class="auth-input">
+                <input type="password" id="reg-pass" placeholder="Password Baru" class="auth-input mb-lg">
+                <button class="auth-btn auth-btn-primary" onclick="handleRegister()">Daftar Akun</button>
+                <p class="auth-note">
+                    Sudah punya akun?
+                    <a href="#" class="auth-link" onclick="toggleAuth('login')">Login</a>
+                </p>
             </div>
 
-            <div id="forgot-form" style="display:none;">
-                <h2 style="color: #ff453a; text-align: center; margin-bottom: 20px;">Reset Password</h2>
-                <p style="font-size:0.8rem; text-align:center; margin-bottom:15px; opacity:0.7; color: white;">Masukkan username Anda untuk melihat password.</p>
-                <input type="text" id="forgot-user" placeholder="Username Anda" style="width:100%; padding:12px; margin-bottom:15px; border-radius:10px; border:none; background:#222; color:white;">
-                <button onclick="handleForgot()" style="width:100%; padding:12px; background:#444; border:none; border-radius:10px; color:white; font-weight:600; cursor:pointer;">Cek Password</button>
-                <p style="font-size:0.8rem; text-align:center; margin-top:15px;"><a href="#" onclick="toggleAuth('login')" style="color:var(--primary-color);">Kembali ke Login</a></p>
+            <!-- Lupa Password -->
+            <div id="forgot-form" style="display: none;">
+                <h2 class="auth-heading" style="color: var(--danger);">Reset Password</h2>
+                <p style="font-size:0.8rem; text-align:center; margin-bottom:15px; opacity:0.7; color: var(--text-base);">
+                    Masukkan username Anda untuk melihat password.
+                </p>
+                <input type="text" id="forgot-user" placeholder="Username Anda" class="auth-input mb-lg">
+                <button class="auth-btn auth-btn-secondary" onclick="handleForgot()">Cek Password</button>
+                <p class="auth-note">
+                    <a href="#" class="auth-link" onclick="toggleAuth('login')">Kembali ke Login</a>
+                </p>
             </div>
+
         </div>
     </div>
 
+    <!-- Toast Container -->
     <div id="toast-container"></div>
 
+    <!-- =====================================================
+         MAIN PLAYER
+         ===================================================== -->
     <div class="player-container">
+
+        <!-- Header -->
         <header class="player-header">
             <div class="user-profile">
-                <div class="avatar"><i class="fas fa-user"></i></div>
+                <div class="avatar" aria-hidden="true">
+                    <i class="fas fa-user"></i>
+                </div>
                 <div class="user-info">
                     <span class="welcome-text">Halo,</span>
                     <span class="username" id="display-username">Pendengar</span>
                 </div>
             </div>
-            <button class="logout-action" onclick="handleLogout()" title="Logout">
-                <i class="fas fa-sign-out-alt"></i>
+            <button class="logout-action" onclick="handleLogout()" title="Logout" aria-label="Logout">
+                <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
             </button>
         </header>
 
+        <!-- Search -->
         <div class="search-section">
             <input type="text" id="search-input" placeholder="Cari judul lagu atau artis...">
         </div>
 
+        <!-- Active Player -->
         <main class="active-player">
+
+            <!-- Cover + Visualizer + Pause Overlay -->
             <div class="cover-wrapper">
                 <canvas id="visualizer"></canvas>
-                <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=1000" id="cover" alt="Cover Album">
+                <img
+                    src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=1000"
+                    id="cover"
+                    alt="Cover Album"
+                >
+                <div class="pause-overlay" id="pause-overlay">
+                    <span class="pause-icon" aria-hidden="true">⏸</span>
+                    <span class="pause-label">Dijeda</span>
+                </div>
             </div>
 
+            <!-- Progress -->
             <div class="progress-container">
                 <span id="current-time">0:00</span>
                 <input type="range" id="progress-bar" value="0" max="100">
                 <span id="duration-time">0:00</span>
             </div>
-        
+
+            <!-- Song Info -->
             <div class="song-details">
-                <h2 id="title">Memuat Lagu...</h2>
-                <p id="artist">Silakan pilih lagu</p>
+                <span id="title">Memuat Lagu...</span>
+                <span id="artist">Silakan pilih lagu</span>
             </div>
 
+            <!-- Lyrics -->
             <div class="lyrics-container" id="lyrics-container">
                 <p id="lyrics-text">Lirik tidak tersedia</p>
             </div>
 
+            <!-- Volume -->
             <div class="volume-container">
-                <i class="fas fa-volume-up"></i>
+                <i class="fas fa-volume-up" aria-hidden="true"></i>
                 <input type="range" id="volume-control" min="0" max="1" step="0.1" value="1">
             </div>
-            
+
+            <!-- Audio -->
             <audio id="audio" preload="auto"></audio>
 
+            <!-- Playback Controls -->
             <div class="playback-controls">
-                <button id="shuffle-btn" title="Putar Acak">🔀</button>
-                <button id="prev-btn" title="Lagu Sebelumnya">⏮</button>
-                <button id="next-btn" title="Lagu Berikutnya">⏭</button>
-                <button id="repeat-btn" title="Ulangi Lagu">🔁</button>
+                <button id="shuffle-btn" title="Putar Acak"       aria-label="Putar Acak">🔀</button>
+                <button id="prev-btn"    title="Lagu Sebelumnya"  aria-label="Lagu Sebelumnya">⏮</button>
+                <button id="play-pause-btn" title="Play / Pause"  aria-label="Play / Pause">▶️</button>
+                <button id="next-btn"    title="Lagu Berikutnya"  aria-label="Lagu Berikutnya">⏭</button>
+                <button id="repeat-btn"  title="Ulangi Lagu"      aria-label="Ulangi Lagu">🔁</button>
             </div>
+
         </main>
 
+        <!-- Upload -->
         <div class="upload-section">
             <label for="file-upload" class="custom-file-upload">
-                <span class="plus-icon">+</span> Tambah Lagu Baru
+                <i class="fas fa-plus" aria-hidden="true"></i> Tambah Lagu Baru
             </label>
-            <input type="file" id="file-upload" accept="audio/*" multiple style="display:none;">
+            <input type="file" id="file-upload" accept="audio/*" multiple style="display: none;">
         </div>
 
-        <section class="playlist" id="playlist"></section>
+        <!-- Playlist -->
+        <section class="playlist" id="playlist" aria-label="Daftar Putar"></section>
+
     </div>
 
+    <!-- =====================================================
+         SCRIPTS
+         ===================================================== -->
     <script src="script.js"></script>
-
     <script>
-        // Fungsi gabungan agar tidak bentrok
+        // integratedLogin — jembatan antara modal dan handleLogin() di script.js
         function integratedLogin() {
             const userField = document.getElementById('login-user');
-            const username = userField.value.trim();
+            const username  = userField.value.trim();
+            if (!username) { alert("Masukkan username terlebih dahulu!"); return; }
 
-            if (username !== "") {
-                // 1. Update nama di Header
-                document.getElementById('display-username').innerText = username;
-                
-                // 2. Panggil fungsi asli dari script.js kamu
-                if (typeof handleLogin === 'function') {
-                    handleLogin(); 
-                } else {
-                    // Jika script.js belum dimuat/error, minimal tutup modalnya
-                    document.getElementById('auth-modal').style.display = 'none';
-                }
-            } else {
-                alert("Masukkan username terlebih dahulu!");
-            }
+            document.getElementById('display-username').innerText = username;
+            if (typeof handleLogin === 'function') handleLogin();
+            else document.getElementById('auth-modal').style.display = 'none';
         }
 
+        // handleLogout — reset UI dan tampilkan kembali auth modal
         function handleLogout() {
-            if(confirm("Apakah Anda yakin ingin keluar?")) {
-                const audio = document.getElementById('audio');
-                if(audio) audio.pause();
-                
-                document.getElementById('auth-modal').style.display = 'flex';
-                document.getElementById('display-username').innerText = "Pendengar";
-                
-                if(typeof toggleAuth === 'function') toggleAuth('login');
-            }
+            if (!confirm("Apakah Anda yakin ingin keluar?")) return;
+            const audio = document.getElementById('audio');
+            if (audio) audio.pause();
+            document.getElementById('auth-modal').style.display    = 'flex';
+            document.getElementById('display-username').innerText  = 'Pendengar';
+            if (typeof toggleAuth === 'function') toggleAuth('login');
         }
     </script>
+
 </body>
 </html>
