@@ -1,0 +1,172 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #0f0f0f; /* Hitam solid untuk kesan premium */
+    color: #ffffff;
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.player-container {
+    width: 100%;
+    max-width: 360px;
+    background: #1a1a1a;
+    padding: 30px;
+    border-radius: 40px; /* Lebih bulat agar terlihat modern */
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
+}
+
+header h1 {
+    font-size: 1.1rem;
+    font-weight: 400;
+    margin-bottom: 25px;
+    color: #1db954;
+    letter-spacing: 3px;
+    opacity: 0.8;
+}
+
+/* Kolom Cari Simpel */
+#search-input {
+    width: 100%;
+    padding: 12px 15px;
+    background: #252525;
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 0.85rem;
+    margin-bottom: 20px;
+    outline: none;
+}
+
+/* Album Art Modern */
+#cover {
+    width: 100%;
+    aspect-ratio: 1/1;
+    border-radius: 30px;
+    object-fit: cover;
+    margin-bottom: 25px;
+    /* Tanpa shadow berat agar lebih clean */
+}
+
+/* Info Lagu */
+.song-details {
+    margin-bottom: 20px;
+}
+
+#title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+#artist {
+    font-size: 0.9rem;
+    color: #888;
+}
+
+/* Audio Player Minimalis */
+audio {
+    width: 100%;
+    height: 30px;
+    filter: invert(100%) brightness(1.5);
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+
+/* Tambah Lagu Style */
+.custom-file-upload {
+    display: block;
+    font-size: 0.8rem;
+    color: #1db954;
+    padding: 10px;
+    border-radius: 12px;
+    background: rgba(29, 185, 84, 0.05);
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: 0.3s;
+}
+
+.custom-file-upload:hover {
+    background: rgba(29, 185, 84, 0.1);
+}
+
+/* Playlist List */
+.playlist {
+    max-height: 180px;
+    overflow-y: auto;
+    text-align: left;
+}
+
+.playlist::-webkit-scrollbar { width: 0; } /* Sembunyikan scrollbar agar bersih */
+
+.playlist-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #222;
+    transition: 0.3s;
+}
+
+.playlist-item:last-child { border-bottom: none; }
+
+.playlist-item.active strong {
+    color: #1db954;
+}
+
+.playlist-item strong {
+    font-size: 0.85rem;
+    display: block;
+    cursor: pointer;
+}
+
+.playlist-item small {
+    color: #555;
+    font-size: 0.75rem;
+}
+
+.delete-btn {
+    background: none;
+    border: none;
+    color: #444;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.delete-btn:hover {
+    color: #ff3b30;
+}
+
+/* Toast Notification Simpel */
+#toast-container {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.toast {
+    background: #333;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    animation: fadeInUp 0.4s ease, fadeOut 0.4s ease 2.5s forwards;
+}
+
+@keyframes fadeInUp {
+    from { bottom: 0; opacity: 0; }
+    to { bottom: 30px; opacity: 1; }
+}

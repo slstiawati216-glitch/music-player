@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VS Code Music Player</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="player-container">
+        <header>
+            <h1>My Playlist</h1>
+        </header>
+
+        <main class="active-player">
+            <div class="cover-wrapper">
+                <img src="assets/cover1.jpg" id="cover" alt="Cover Album">
+            </div>
+            
+            <div class="song-details">
+                <h2 id="title">Memuat Lagu...</h2>
+                <p id="artist">Silakan tunggu</p>
+            </div>
+            
+            <div class="audio-wrapper">
+                <audio id="audio" controls preload="auto">
+                    </audio>
+            </div>
+        </main>
+
+        <div class="upload-section">
+            <label for="file-upload" class="custom-file-upload">
+                <span class="plus-icon">+</span> Tambah Lagu Baru
+            </label>
+            <input type="file" id="file-upload" accept="audio/*" multiple style="display:none;">
+        </div>
+
+        <section class="playlist" id="playlist">
+            </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
